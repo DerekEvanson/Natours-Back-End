@@ -1,3 +1,6 @@
 node_modules
 config.env
 .env
+.env.development.local
+.env.local
+newConfig.env
