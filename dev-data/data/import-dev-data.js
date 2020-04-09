@@ -1,3 +1,6 @@
+// node dev-data/data/import-dev-data.js --delete
+// node dev-data/data/import-dev-data.js --import
+
 const fs = require('fs');
 const Tour = require('./../../models/tourModel');
 const mongoose = require('mongoose');
@@ -19,9 +22,7 @@ mongoose
   .then(() => console.log('Connected to Database...'));
 
 // Read JSON file
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8')
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 // Import data into DB
 const importData = async () => {
