@@ -14,7 +14,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
 
   // Send response
-  res.status(500).json({
+  res.status(200).json({
     status: 'success',
     results: users.length,
     data: {
@@ -36,7 +36,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   // 2) Filtered out unwanted field names that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
 
-  // 2) Update user document
+  // 3) Update user document
   const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
     runValidators: true,

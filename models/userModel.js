@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'A user must have a email'],
     unique: true,
     lowercase: true,
-    validate: [validator.isEmail, 'need a valid email'],
+    validate: [validator.isEmail, 'Need a valid email'],
   },
   photo: String,
   role: {
@@ -42,8 +42,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
-  passwordRestToken: String,
-  passwordRestExpires: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
   active: {
     type: Boolean,
     default: true,
@@ -70,6 +70,12 @@ userSchema.pre('save', function (next) {
   next();
 });
 
+userSchema.pre(/^find/, function (next) {
+  // this points to the current query
+  this.find({ active: { $ne: false } });
+  next();
+});
+
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
@@ -77,33 +83,30 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.pre(/^find/, function (next) {
-  // this points to the current query
-  this.find({ active: { $ne: false } });
-  next();
-});
-
-userSchema.methods.changedPasswordAfter = function (JWTimestamp) {
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.passwordChangedAt) {
-    const changedTimestamp = parse(this.passwordChangedAt.getTime() / 1000, 10);
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
     return JWTTimestamp < changedTimestamp;
   }
   // false means not changed
   return false;
 };
 
-userSchema.methods.createPasswordRestToken = function () {
+userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
-  this.passwordRestToken = crypto
-    .createHash('sha246')
-    .update(restToken)
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
     .digest('hex');
 
-  this.passwordRestExpires = Date.now() + 10 * 60 * 1000;
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
-  return restToken;
+  return resetToken;
 };
 
-const User = new mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 module.exports = User;

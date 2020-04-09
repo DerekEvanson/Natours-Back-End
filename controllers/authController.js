@@ -2,8 +2,8 @@ const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
-const AppError = require('./../utils/appError');
 const catchAsync = require('./../utils/catchAsync');
+const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
 
 const signToken = (id) => {
@@ -36,7 +36,7 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-exports.signUp = catchAsync(async (req, res, next) => {
+exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -53,7 +53,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!email || !password) {
     return next(new AppError('Please provide email and password', 400));
   }
-  // Check if user exists && password is correct
+  // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
@@ -71,7 +71,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
-    token - req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization.split(' ')[1];
   }
 
   if (!token) {
@@ -87,13 +87,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
   if (!currentUser) {
     return next(
-      new AppError('The user belonging to this token no longer exists.'),
-      401
+      new AppError('The user belonging to this token no longer exists.', 401)
     );
   }
 
   // 4) Check if user changed password after the token was issued
-  if (currentUser.changesPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
       new AppError('User recently changed password. Please log in again.', 401)
     );
@@ -123,14 +122,14 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     return next(new AppError('There is no user with email address.', 404));
   }
 
-  // 2) Generate the random rest token
-  const restToken = user.createPasswordResetToken();
+  // 2) Generate the random reset token
+  const resetToken = user.createPasswordResetToken();
   await user.save({ validateBeforeSave: false });
 
   // 3) Send it to user's email
   const resetURL = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/users/restPassword/${restToken}`;
+  )}/api/v1/users/resetPassword/${resetToken}`;
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email`;
 
@@ -146,7 +145,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       message: 'Token sent to email',
     });
   } catch (err) {
-    user.passwordRestToken = undefined;
+    user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
     return next(
@@ -156,15 +155,15 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.restPassword = catchAsync(async (req, res, next) => {
+exports.resetPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on the token
-  const hashToken = crypto
+  const hashedToken = crypto
     .createHash('sha256')
     .update(req.params.token)
     .digest('hex');
 
   const user = await User.findOne({
-    passwordRestToken: hashToken,
+    passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
 
@@ -174,7 +173,7 @@ exports.restPassword = catchAsync(async (req, res, next) => {
   }
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
-  user.passwordRestToken = undefined;
+  user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
 
