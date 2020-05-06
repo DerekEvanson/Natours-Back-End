@@ -4,3 +4,4 @@ config.env
 .env.development.local
 .env.local
 newConfig.env
+.cache
