@@ -1,7 +1,9 @@
 node_modules
+node_modules/
 config.env
-.env
+*.env
 .env.development.local
 .env.local
 newConfig.env
 .cache
+.cache/
