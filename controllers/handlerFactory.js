@@ -38,6 +38,7 @@ exports.updateOne = (Model) =>
 exports.createOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const doc = await Model.create(req.body);
+
     res.status(201).json({
       status: 'success',
       data: {
@@ -59,14 +60,14 @@ exports.getOne = (Model, popOptions) =>
     res.status(200).json({
       status: 'success',
       data: {
-        date: doc,
+        data: doc,
       },
     });
   });
 
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    // To allow for nested get reviews on tour
+    // To allow for nested GET reviews on tour (hack)
     let filter = {};
     if (req.params.tourId) filter = { tour: req.params.tourId };
 
@@ -75,6 +76,7 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields()
       .paginate();
+    // const doc = await features.query.explain();
     const doc = await features.query;
 
     // SEND RESPONSE

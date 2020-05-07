@@ -613,72 +613,7 @@ $export($export.P + $export.F * forced, 'Array', {
 });
 require('./_add-to-unscopables')(KEY);
 
-},{"./_export":"../../node_modules/core-js/modules/_export.js","./_array-methods":"../../node_modules/core-js/modules/_array-methods.js","./_add-to-unscopables":"../../node_modules/core-js/modules/_add-to-unscopables.js"}],"../../node_modules/core-js/modules/_flatten-into-array.js":[function(require,module,exports) {
-'use strict';
-// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
-var isArray = require('./_is-array');
-var isObject = require('./_is-object');
-var toLength = require('./_to-length');
-var ctx = require('./_ctx');
-var IS_CONCAT_SPREADABLE = require('./_wks')('isConcatSpreadable');
-
-function flattenIntoArray(target, original, source, sourceLen, start, depth, mapper, thisArg) {
-  var targetIndex = start;
-  var sourceIndex = 0;
-  var mapFn = mapper ? ctx(mapper, thisArg, 3) : false;
-  var element, spreadable;
-
-  while (sourceIndex < sourceLen) {
-    if (sourceIndex in source) {
-      element = mapFn ? mapFn(source[sourceIndex], sourceIndex, original) : source[sourceIndex];
-
-      spreadable = false;
-      if (isObject(element)) {
-        spreadable = element[IS_CONCAT_SPREADABLE];
-        spreadable = spreadable !== undefined ? !!spreadable : isArray(element);
-      }
-
-      if (spreadable && depth > 0) {
-        targetIndex = flattenIntoArray(target, original, element, toLength(element.length), targetIndex, depth - 1) - 1;
-      } else {
-        if (targetIndex >= 0x1fffffffffffff) throw TypeError();
-        target[targetIndex] = element;
-      }
-
-      targetIndex++;
-    }
-    sourceIndex++;
-  }
-  return targetIndex;
-}
-
-module.exports = flattenIntoArray;
-
-},{"./_is-array":"../../node_modules/core-js/modules/_is-array.js","./_is-object":"../../node_modules/core-js/modules/_is-object.js","./_to-length":"../../node_modules/core-js/modules/_to-length.js","./_ctx":"../../node_modules/core-js/modules/_ctx.js","./_wks":"../../node_modules/core-js/modules/_wks.js"}],"../../node_modules/core-js/modules/es7.array.flat-map.js":[function(require,module,exports) {
-'use strict';
-// https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
-var $export = require('./_export');
-var flattenIntoArray = require('./_flatten-into-array');
-var toObject = require('./_to-object');
-var toLength = require('./_to-length');
-var aFunction = require('./_a-function');
-var arraySpeciesCreate = require('./_array-species-create');
-
-$export($export.P, 'Array', {
-  flatMap: function flatMap(callbackfn /* , thisArg */) {
-    var O = toObject(this);
-    var sourceLen, A;
-    aFunction(callbackfn);
-    sourceLen = toLength(O.length);
-    A = arraySpeciesCreate(O, 0);
-    flattenIntoArray(A, O, O, sourceLen, 0, 1, callbackfn, arguments[1]);
-    return A;
-  }
-});
-
-require('./_add-to-unscopables')('flatMap');
-
-},{"./_export":"../../node_modules/core-js/modules/_export.js","./_flatten-into-array":"../../node_modules/core-js/modules/_flatten-into-array.js","./_to-object":"../../node_modules/core-js/modules/_to-object.js","./_to-length":"../../node_modules/core-js/modules/_to-length.js","./_a-function":"../../node_modules/core-js/modules/_a-function.js","./_array-species-create":"../../node_modules/core-js/modules/_array-species-create.js","./_add-to-unscopables":"../../node_modules/core-js/modules/_add-to-unscopables.js"}],"../../node_modules/core-js/modules/_iter-call.js":[function(require,module,exports) {
+},{"./_export":"../../node_modules/core-js/modules/_export.js","./_array-methods":"../../node_modules/core-js/modules/_array-methods.js","./_add-to-unscopables":"../../node_modules/core-js/modules/_add-to-unscopables.js"}],"../../node_modules/core-js/modules/_iter-call.js":[function(require,module,exports) {
 // call something on iterator step with safe closing on error
 var anObject = require('./_an-object');
 module.exports = function (iterator, fn, value, entries) {
@@ -2426,19 +2361,7 @@ require('./_object-sap')('preventExtensions', function ($preventExtensions) {
   };
 });
 
-},{"./_is-object":"../../node_modules/core-js/modules/_is-object.js","./_meta":"../../node_modules/core-js/modules/_meta.js","./_object-sap":"../../node_modules/core-js/modules/_object-sap.js"}],"../../node_modules/core-js/modules/es6.object.to-string.js":[function(require,module,exports) {
-'use strict';
-// 19.1.3.6 Object.prototype.toString()
-var classof = require('./_classof');
-var test = {};
-test[require('./_wks')('toStringTag')] = 'z';
-if (test + '' != '[object z]') {
-  require('./_redefine')(Object.prototype, 'toString', function toString() {
-    return '[object ' + classof(this) + ']';
-  }, true);
-}
-
-},{"./_classof":"../../node_modules/core-js/modules/_classof.js","./_wks":"../../node_modules/core-js/modules/_wks.js","./_redefine":"../../node_modules/core-js/modules/_redefine.js"}],"../../node_modules/core-js/modules/_same-value.js":[function(require,module,exports) {
+},{"./_is-object":"../../node_modules/core-js/modules/_is-object.js","./_meta":"../../node_modules/core-js/modules/_meta.js","./_object-sap":"../../node_modules/core-js/modules/_object-sap.js"}],"../../node_modules/core-js/modules/_same-value.js":[function(require,module,exports) {
 // 7.2.9 SameValue(x, y)
 module.exports = Object.is || function is(x, y) {
   // eslint-disable-next-line no-self-compare
@@ -4673,25 +4596,7 @@ require('./_string-html')('sup', function (createHTML) {
   };
 });
 
-},{"./_string-html":"../../node_modules/core-js/modules/_string-html.js"}],"../../node_modules/core-js/modules/es7.string.trim-left.js":[function(require,module,exports) {
-'use strict';
-// https://github.com/sebmarkbage/ecmascript-string-left-right-trim
-require('./_string-trim')('trimLeft', function ($trim) {
-  return function trimLeft() {
-    return $trim(this, 1);
-  };
-}, 'trimStart');
-
-},{"./_string-trim":"../../node_modules/core-js/modules/_string-trim.js"}],"../../node_modules/core-js/modules/es7.string.trim-right.js":[function(require,module,exports) {
-'use strict';
-// https://github.com/sebmarkbage/ecmascript-string-left-right-trim
-require('./_string-trim')('trimRight', function ($trim) {
-  return function trimRight() {
-    return $trim(this, 2);
-  };
-}, 'trimEnd');
-
-},{"./_string-trim":"../../node_modules/core-js/modules/_string-trim.js"}],"../../node_modules/core-js/modules/_typed.js":[function(require,module,exports) {
+},{"./_string-html":"../../node_modules/core-js/modules/_string-html.js"}],"../../node_modules/core-js/modules/_typed.js":[function(require,module,exports) {
 
 var global = require('./_global');
 var hide = require('./_hide');
@@ -5779,7 +5684,72 @@ require('./_collection')(WEAK_SET, function (get) {
   }
 }, weak, false, true);
 
-},{"./_collection-weak":"../../node_modules/core-js/modules/_collection-weak.js","./_validate-collection":"../../node_modules/core-js/modules/_validate-collection.js","./_collection":"../../node_modules/core-js/modules/_collection.js"}],"../../node_modules/core-js/modules/web.timers.js":[function(require,module,exports) {
+},{"./_collection-weak":"../../node_modules/core-js/modules/_collection-weak.js","./_validate-collection":"../../node_modules/core-js/modules/_validate-collection.js","./_collection":"../../node_modules/core-js/modules/_collection.js"}],"../../node_modules/core-js/modules/_flatten-into-array.js":[function(require,module,exports) {
+'use strict';
+// https://tc39.github.io/proposal-flatMap/#sec-FlattenIntoArray
+var isArray = require('./_is-array');
+var isObject = require('./_is-object');
+var toLength = require('./_to-length');
+var ctx = require('./_ctx');
+var IS_CONCAT_SPREADABLE = require('./_wks')('isConcatSpreadable');
+
+function flattenIntoArray(target, original, source, sourceLen, start, depth, mapper, thisArg) {
+  var targetIndex = start;
+  var sourceIndex = 0;
+  var mapFn = mapper ? ctx(mapper, thisArg, 3) : false;
+  var element, spreadable;
+
+  while (sourceIndex < sourceLen) {
+    if (sourceIndex in source) {
+      element = mapFn ? mapFn(source[sourceIndex], sourceIndex, original) : source[sourceIndex];
+
+      spreadable = false;
+      if (isObject(element)) {
+        spreadable = element[IS_CONCAT_SPREADABLE];
+        spreadable = spreadable !== undefined ? !!spreadable : isArray(element);
+      }
+
+      if (spreadable && depth > 0) {
+        targetIndex = flattenIntoArray(target, original, element, toLength(element.length), targetIndex, depth - 1) - 1;
+      } else {
+        if (targetIndex >= 0x1fffffffffffff) throw TypeError();
+        target[targetIndex] = element;
+      }
+
+      targetIndex++;
+    }
+    sourceIndex++;
+  }
+  return targetIndex;
+}
+
+module.exports = flattenIntoArray;
+
+},{"./_is-array":"../../node_modules/core-js/modules/_is-array.js","./_is-object":"../../node_modules/core-js/modules/_is-object.js","./_to-length":"../../node_modules/core-js/modules/_to-length.js","./_ctx":"../../node_modules/core-js/modules/_ctx.js","./_wks":"../../node_modules/core-js/modules/_wks.js"}],"../../node_modules/core-js/modules/es7.array.flat-map.js":[function(require,module,exports) {
+'use strict';
+// https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
+var $export = require('./_export');
+var flattenIntoArray = require('./_flatten-into-array');
+var toObject = require('./_to-object');
+var toLength = require('./_to-length');
+var aFunction = require('./_a-function');
+var arraySpeciesCreate = require('./_array-species-create');
+
+$export($export.P, 'Array', {
+  flatMap: function flatMap(callbackfn /* , thisArg */) {
+    var O = toObject(this);
+    var sourceLen, A;
+    aFunction(callbackfn);
+    sourceLen = toLength(O.length);
+    A = arraySpeciesCreate(O, 0);
+    flattenIntoArray(A, O, O, sourceLen, 0, 1, callbackfn, arguments[1]);
+    return A;
+  }
+});
+
+require('./_add-to-unscopables')('flatMap');
+
+},{"./_export":"../../node_modules/core-js/modules/_export.js","./_flatten-into-array":"../../node_modules/core-js/modules/_flatten-into-array.js","./_to-object":"../../node_modules/core-js/modules/_to-object.js","./_to-length":"../../node_modules/core-js/modules/_to-length.js","./_a-function":"../../node_modules/core-js/modules/_a-function.js","./_array-species-create":"../../node_modules/core-js/modules/_array-species-create.js","./_add-to-unscopables":"../../node_modules/core-js/modules/_add-to-unscopables.js"}],"../../node_modules/core-js/modules/web.timers.js":[function(require,module,exports) {
 
 // ie9- setTimeout & setInterval additional parameters fix
 var global = require('./_global');
@@ -8419,14 +8389,14 @@ exports.showAlert = exports.hideAlert = void 0;
 var hideAlert = function hideAlert() {
   var el = document.querySelector('.alert');
   if (el) el.parentElement.removeChild(el);
-}; // type is 'success' of 'error'
+}; // type is 'success' or 'error'
 
 
 exports.hideAlert = hideAlert;
 
 var showAlert = function showAlert(type, msg) {
   hideAlert();
-  var markup = "<div class=\"alert alert--".concat(type, ">").concat(msg, "</div>");
+  var markup = "<div class=\"alert alert--".concat(type, "\">").concat(msg, "</div>");
   document.querySelector('body').insertAdjacentHTML('afterbegin', markup);
   window.setTimeout(hideAlert, 5000);
 };
@@ -8450,8 +8420,12 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var login = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(email, password) {
+var login =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(email, password) {
     var res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -8501,8 +8475,12 @@ var login = /*#__PURE__*/function () {
 
 exports.login = login;
 
-var logout = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+var logout =
+/*#__PURE__*/
+function () {
+  var _ref2 = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee2() {
     var res;
     return regeneratorRuntime.wrap(function _callee2$(_context2) {
       while (1) {
@@ -8560,8 +8538,12 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 // type is either 'password' or 'data'
-var updateSettings = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data, type) {
+var updateSettings =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(data, type) {
     var url, res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -8589,7 +8571,7 @@ var updateSettings = /*#__PURE__*/function () {
           case 8:
             _context.prev = 8;
             _context.t0 = _context["catch"](0);
-            (0, _alerts.showAlert)('error', _context.t0.response.dat.message);
+            (0, _alerts.showAlert)('error', _context.t0.response.data.message);
 
           case 11:
           case "end":
@@ -8605,6 +8587,74 @@ var updateSettings = /*#__PURE__*/function () {
 }();
 
 exports.updateSettings = updateSettings;
+},{"axios":"../../node_modules/axios/index.js","./alerts":"alerts.js"}],"stripe.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.bookTour = void 0;
+
+var _axios = _interopRequireDefault(require("axios"));
+
+var _alerts = require("./alerts");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+var stripe = Stripe('pk_test_Y7vBsbYCi3QKoMyjukBBsXgF00TjKmHXI4');
+
+var bookTour =
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(tourId) {
+    var session;
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return (0, _axios.default)("http://localhost:8000/api/v1/bookings/checkout-session/".concat(tourId));
+
+          case 3:
+            session = _context.sent;
+            console.log(session); // 2) Create checkout form + change credit card
+
+            _context.next = 7;
+            return stripe.redirectToCheckout({
+              sessionId: session.data.session.id
+            });
+
+          case 7:
+            _context.next = 13;
+            break;
+
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0);
+            (0, _alerts.showAlert)('error', _context.t0);
+
+          case 13:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 9]]);
+  }));
+
+  return function bookTour(_x) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.bookTour = bookTour;
 },{"axios":"../../node_modules/axios/index.js","./alerts":"alerts.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -8615,8 +8665,6 @@ require("core-js/modules/es6.array.fill");
 require("core-js/modules/es6.array.find");
 
 require("core-js/modules/es6.array.find-index");
-
-require("core-js/modules/es7.array.flat-map");
 
 require("core-js/modules/es6.array.from");
 
@@ -8717,8 +8765,6 @@ require("core-js/modules/es7.object.lookup-getter");
 require("core-js/modules/es7.object.lookup-setter");
 
 require("core-js/modules/es6.object.prevent-extensions");
-
-require("core-js/modules/es6.object.to-string");
 
 require("core-js/modules/es6.object.is");
 
@@ -8832,10 +8878,6 @@ require("core-js/modules/es6.string.sub");
 
 require("core-js/modules/es6.string.sup");
 
-require("core-js/modules/es7.string.trim-left");
-
-require("core-js/modules/es7.string.trim-right");
-
 require("core-js/modules/es6.typed.array-buffer");
 
 require("core-js/modules/es6.typed.data-view");
@@ -8862,6 +8904,8 @@ require("core-js/modules/es6.weak-map");
 
 require("core-js/modules/es6.weak-set");
 
+require("core-js/modules/es7.array.flat-map");
+
 require("core-js/modules/web.timers");
 
 require("core-js/modules/web.immediate");
@@ -8876,6 +8920,8 @@ var _login = require("./login");
 
 var _updateSettings = require("./updateSettings");
 
+var _stripe = require("./stripe");
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -8885,7 +8931,8 @@ var mapBox = document.getElementById('map');
 var loginForm = document.querySelector('.form--login');
 var logOutBtn = document.querySelector('.nav__el--logout');
 var userDataForm = document.querySelector('.form-user-data');
-var userPasswordForm = document.querySelector('.form-user-password'); // DELEGATION
+var userPasswordForm = document.querySelector('.form-user-password');
+var bookBtn = document.getElementById('book-tour'); // DELEGATION
 
 if (mapBox) {
   var locations = JSON.parse(mapBox.dataset.locations);
@@ -8910,8 +8957,12 @@ if (userDataForm) userDataForm.addEventListener('submit', function (e) {
   form.append('photo', document.getElementById('photo').files[0]);
   (0, _updateSettings.updateSettings)(form, 'data');
 });
-if (userPasswordForm) userPasswordForm.addEventListener('submit', /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
+if (userPasswordForm) userPasswordForm.addEventListener('submit',
+/*#__PURE__*/
+function () {
+  var _ref = _asyncToGenerator(
+  /*#__PURE__*/
+  regeneratorRuntime.mark(function _callee(e) {
     var passwordCurrent, password, passwordConfirm;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -8947,7 +8998,12 @@ if (userPasswordForm) userPasswordForm.addEventListener('submit', /*#__PURE__*/f
     return _ref.apply(this, arguments);
   };
 }());
-},{"core-js/modules/es6.array.copy-within":"../../node_modules/core-js/modules/es6.array.copy-within.js","core-js/modules/es6.array.fill":"../../node_modules/core-js/modules/es6.array.fill.js","core-js/modules/es6.array.find":"../../node_modules/core-js/modules/es6.array.find.js","core-js/modules/es6.array.find-index":"../../node_modules/core-js/modules/es6.array.find-index.js","core-js/modules/es7.array.flat-map":"../../node_modules/core-js/modules/es7.array.flat-map.js","core-js/modules/es6.array.from":"../../node_modules/core-js/modules/es6.array.from.js","core-js/modules/es7.array.includes":"../../node_modules/core-js/modules/es7.array.includes.js","core-js/modules/es6.array.iterator":"../../node_modules/core-js/modules/es6.array.iterator.js","core-js/modules/es6.array.of":"../../node_modules/core-js/modules/es6.array.of.js","core-js/modules/es6.array.sort":"../../node_modules/core-js/modules/es6.array.sort.js","core-js/modules/es6.array.species":"../../node_modules/core-js/modules/es6.array.species.js","core-js/modules/es6.date.to-primitive":"../../node_modules/core-js/modules/es6.date.to-primitive.js","core-js/modules/es6.date.to-string":"../../node_modules/core-js/modules/es6.date.to-string.js","core-js/modules/es6.function.has-instance":"../../node_modules/core-js/modules/es6.function.has-instance.js","core-js/modules/es6.function.name":"../../node_modules/core-js/modules/es6.function.name.js","core-js/modules/es6.map":"../../node_modules/core-js/modules/es6.map.js","core-js/modules/es6.math.acosh":"../../node_modules/core-js/modules/es6.math.acosh.js","core-js/modules/es6.math.asinh":"../../node_modules/core-js/modules/es6.math.asinh.js","core-js/modules/es6.math.atanh":"../../node_modules/core-js/modules/es6.math.atanh.js","core-js/modules/es6.math.cbrt":"../../node_modules/core-js/modules/es6.math.cbrt.js","core-js/modules/es6.math.clz32":"../../node_modules/core-js/modules/es6.math.clz32.js","core-js/modules/es6.math.cosh":"../../node_modules/core-js/modules/es6.math.cosh.js","core-js/modules/es6.math.expm1":"../../node_modules/core-js/modules/es6.math.expm1.js","core-js/modules/es6.math.fround":"../../node_modules/core-js/modules/es6.math.fround.js","core-js/modules/es6.math.hypot":"../../node_modules/core-js/modules/es6.math.hypot.js","core-js/modules/es6.math.imul":"../../node_modules/core-js/modules/es6.math.imul.js","core-js/modules/es6.math.log1p":"../../node_modules/core-js/modules/es6.math.log1p.js","core-js/modules/es6.math.log10":"../../node_modules/core-js/modules/es6.math.log10.js","core-js/modules/es6.math.log2":"../../node_modules/core-js/modules/es6.math.log2.js","core-js/modules/es6.math.sign":"../../node_modules/core-js/modules/es6.math.sign.js","core-js/modules/es6.math.sinh":"../../node_modules/core-js/modules/es6.math.sinh.js","core-js/modules/es6.math.tanh":"../../node_modules/core-js/modules/es6.math.tanh.js","core-js/modules/es6.math.trunc":"../../node_modules/core-js/modules/es6.math.trunc.js","core-js/modules/es6.number.constructor":"../../node_modules/core-js/modules/es6.number.constructor.js","core-js/modules/es6.number.epsilon":"../../node_modules/core-js/modules/es6.number.epsilon.js","core-js/modules/es6.number.is-finite":"../../node_modules/core-js/modules/es6.number.is-finite.js","core-js/modules/es6.number.is-integer":"../../node_modules/core-js/modules/es6.number.is-integer.js","core-js/modules/es6.number.is-nan":"../../node_modules/core-js/modules/es6.number.is-nan.js","core-js/modules/es6.number.is-safe-integer":"../../node_modules/core-js/modules/es6.number.is-safe-integer.js","core-js/modules/es6.number.max-safe-integer":"../../node_modules/core-js/modules/es6.number.max-safe-integer.js","core-js/modules/es6.number.min-safe-integer":"../../node_modules/core-js/modules/es6.number.min-safe-integer.js","core-js/modules/es6.number.parse-float":"../../node_modules/core-js/modules/es6.number.parse-float.js","core-js/modules/es6.number.parse-int":"../../node_modules/core-js/modules/es6.number.parse-int.js","core-js/modules/es6.object.assign":"../../node_modules/core-js/modules/es6.object.assign.js","core-js/modules/es7.object.define-getter":"../../node_modules/core-js/modules/es7.object.define-getter.js","core-js/modules/es7.object.define-setter":"../../node_modules/core-js/modules/es7.object.define-setter.js","core-js/modules/es7.object.entries":"../../node_modules/core-js/modules/es7.object.entries.js","core-js/modules/es6.object.freeze":"../../node_modules/core-js/modules/es6.object.freeze.js","core-js/modules/es6.object.get-own-property-descriptor":"../../node_modules/core-js/modules/es6.object.get-own-property-descriptor.js","core-js/modules/es7.object.get-own-property-descriptors":"../../node_modules/core-js/modules/es7.object.get-own-property-descriptors.js","core-js/modules/es6.object.get-own-property-names":"../../node_modules/core-js/modules/es6.object.get-own-property-names.js","core-js/modules/es6.object.get-prototype-of":"../../node_modules/core-js/modules/es6.object.get-prototype-of.js","core-js/modules/es7.object.lookup-getter":"../../node_modules/core-js/modules/es7.object.lookup-getter.js","core-js/modules/es7.object.lookup-setter":"../../node_modules/core-js/modules/es7.object.lookup-setter.js","core-js/modules/es6.object.prevent-extensions":"../../node_modules/core-js/modules/es6.object.prevent-extensions.js","core-js/modules/es6.object.to-string":"../../node_modules/core-js/modules/es6.object.to-string.js","core-js/modules/es6.object.is":"../../node_modules/core-js/modules/es6.object.is.js","core-js/modules/es6.object.is-frozen":"../../node_modules/core-js/modules/es6.object.is-frozen.js","core-js/modules/es6.object.is-sealed":"../../node_modules/core-js/modules/es6.object.is-sealed.js","core-js/modules/es6.object.is-extensible":"../../node_modules/core-js/modules/es6.object.is-extensible.js","core-js/modules/es6.object.keys":"../../node_modules/core-js/modules/es6.object.keys.js","core-js/modules/es6.object.seal":"../../node_modules/core-js/modules/es6.object.seal.js","core-js/modules/es6.object.set-prototype-of":"../../node_modules/core-js/modules/es6.object.set-prototype-of.js","core-js/modules/es7.object.values":"../../node_modules/core-js/modules/es7.object.values.js","core-js/modules/es6.promise":"../../node_modules/core-js/modules/es6.promise.js","core-js/modules/es7.promise.finally":"../../node_modules/core-js/modules/es7.promise.finally.js","core-js/modules/es6.reflect.apply":"../../node_modules/core-js/modules/es6.reflect.apply.js","core-js/modules/es6.reflect.construct":"../../node_modules/core-js/modules/es6.reflect.construct.js","core-js/modules/es6.reflect.define-property":"../../node_modules/core-js/modules/es6.reflect.define-property.js","core-js/modules/es6.reflect.delete-property":"../../node_modules/core-js/modules/es6.reflect.delete-property.js","core-js/modules/es6.reflect.get":"../../node_modules/core-js/modules/es6.reflect.get.js","core-js/modules/es6.reflect.get-own-property-descriptor":"../../node_modules/core-js/modules/es6.reflect.get-own-property-descriptor.js","core-js/modules/es6.reflect.get-prototype-of":"../../node_modules/core-js/modules/es6.reflect.get-prototype-of.js","core-js/modules/es6.reflect.has":"../../node_modules/core-js/modules/es6.reflect.has.js","core-js/modules/es6.reflect.is-extensible":"../../node_modules/core-js/modules/es6.reflect.is-extensible.js","core-js/modules/es6.reflect.own-keys":"../../node_modules/core-js/modules/es6.reflect.own-keys.js","core-js/modules/es6.reflect.prevent-extensions":"../../node_modules/core-js/modules/es6.reflect.prevent-extensions.js","core-js/modules/es6.reflect.set":"../../node_modules/core-js/modules/es6.reflect.set.js","core-js/modules/es6.reflect.set-prototype-of":"../../node_modules/core-js/modules/es6.reflect.set-prototype-of.js","core-js/modules/es6.regexp.constructor":"../../node_modules/core-js/modules/es6.regexp.constructor.js","core-js/modules/es6.regexp.flags":"../../node_modules/core-js/modules/es6.regexp.flags.js","core-js/modules/es6.regexp.match":"../../node_modules/core-js/modules/es6.regexp.match.js","core-js/modules/es6.regexp.replace":"../../node_modules/core-js/modules/es6.regexp.replace.js","core-js/modules/es6.regexp.split":"../../node_modules/core-js/modules/es6.regexp.split.js","core-js/modules/es6.regexp.search":"../../node_modules/core-js/modules/es6.regexp.search.js","core-js/modules/es6.regexp.to-string":"../../node_modules/core-js/modules/es6.regexp.to-string.js","core-js/modules/es6.set":"../../node_modules/core-js/modules/es6.set.js","core-js/modules/es6.symbol":"../../node_modules/core-js/modules/es6.symbol.js","core-js/modules/es7.symbol.async-iterator":"../../node_modules/core-js/modules/es7.symbol.async-iterator.js","core-js/modules/es6.string.anchor":"../../node_modules/core-js/modules/es6.string.anchor.js","core-js/modules/es6.string.big":"../../node_modules/core-js/modules/es6.string.big.js","core-js/modules/es6.string.blink":"../../node_modules/core-js/modules/es6.string.blink.js","core-js/modules/es6.string.bold":"../../node_modules/core-js/modules/es6.string.bold.js","core-js/modules/es6.string.code-point-at":"../../node_modules/core-js/modules/es6.string.code-point-at.js","core-js/modules/es6.string.ends-with":"../../node_modules/core-js/modules/es6.string.ends-with.js","core-js/modules/es6.string.fixed":"../../node_modules/core-js/modules/es6.string.fixed.js","core-js/modules/es6.string.fontcolor":"../../node_modules/core-js/modules/es6.string.fontcolor.js","core-js/modules/es6.string.fontsize":"../../node_modules/core-js/modules/es6.string.fontsize.js","core-js/modules/es6.string.from-code-point":"../../node_modules/core-js/modules/es6.string.from-code-point.js","core-js/modules/es6.string.includes":"../../node_modules/core-js/modules/es6.string.includes.js","core-js/modules/es6.string.italics":"../../node_modules/core-js/modules/es6.string.italics.js","core-js/modules/es6.string.iterator":"../../node_modules/core-js/modules/es6.string.iterator.js","core-js/modules/es6.string.link":"../../node_modules/core-js/modules/es6.string.link.js","core-js/modules/es7.string.pad-start":"../../node_modules/core-js/modules/es7.string.pad-start.js","core-js/modules/es7.string.pad-end":"../../node_modules/core-js/modules/es7.string.pad-end.js","core-js/modules/es6.string.raw":"../../node_modules/core-js/modules/es6.string.raw.js","core-js/modules/es6.string.repeat":"../../node_modules/core-js/modules/es6.string.repeat.js","core-js/modules/es6.string.small":"../../node_modules/core-js/modules/es6.string.small.js","core-js/modules/es6.string.starts-with":"../../node_modules/core-js/modules/es6.string.starts-with.js","core-js/modules/es6.string.strike":"../../node_modules/core-js/modules/es6.string.strike.js","core-js/modules/es6.string.sub":"../../node_modules/core-js/modules/es6.string.sub.js","core-js/modules/es6.string.sup":"../../node_modules/core-js/modules/es6.string.sup.js","core-js/modules/es7.string.trim-left":"../../node_modules/core-js/modules/es7.string.trim-left.js","core-js/modules/es7.string.trim-right":"../../node_modules/core-js/modules/es7.string.trim-right.js","core-js/modules/es6.typed.array-buffer":"../../node_modules/core-js/modules/es6.typed.array-buffer.js","core-js/modules/es6.typed.data-view":"../../node_modules/core-js/modules/es6.typed.data-view.js","core-js/modules/es6.typed.int8-array":"../../node_modules/core-js/modules/es6.typed.int8-array.js","core-js/modules/es6.typed.uint8-array":"../../node_modules/core-js/modules/es6.typed.uint8-array.js","core-js/modules/es6.typed.uint8-clamped-array":"../../node_modules/core-js/modules/es6.typed.uint8-clamped-array.js","core-js/modules/es6.typed.int16-array":"../../node_modules/core-js/modules/es6.typed.int16-array.js","core-js/modules/es6.typed.uint16-array":"../../node_modules/core-js/modules/es6.typed.uint16-array.js","core-js/modules/es6.typed.int32-array":"../../node_modules/core-js/modules/es6.typed.int32-array.js","core-js/modules/es6.typed.uint32-array":"../../node_modules/core-js/modules/es6.typed.uint32-array.js","core-js/modules/es6.typed.float32-array":"../../node_modules/core-js/modules/es6.typed.float32-array.js","core-js/modules/es6.typed.float64-array":"../../node_modules/core-js/modules/es6.typed.float64-array.js","core-js/modules/es6.weak-map":"../../node_modules/core-js/modules/es6.weak-map.js","core-js/modules/es6.weak-set":"../../node_modules/core-js/modules/es6.weak-set.js","core-js/modules/web.timers":"../../node_modules/core-js/modules/web.timers.js","core-js/modules/web.immediate":"../../node_modules/core-js/modules/web.immediate.js","core-js/modules/web.dom.iterable":"../../node_modules/core-js/modules/web.dom.iterable.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./mapbox":"mapbox.js","./login":"login.js","./updateSettings":"updateSettings.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+if (bookBtn) bookBtn.addEventListener('click', function (e) {
+  e.target.textContent = 'Processing...';
+  var tourId = e.target.dataset.tourId;
+  (0, _stripe.bookTour)(tourId);
+});
+},{"core-js/modules/es6.array.copy-within":"../../node_modules/core-js/modules/es6.array.copy-within.js","core-js/modules/es6.array.fill":"../../node_modules/core-js/modules/es6.array.fill.js","core-js/modules/es6.array.find":"../../node_modules/core-js/modules/es6.array.find.js","core-js/modules/es6.array.find-index":"../../node_modules/core-js/modules/es6.array.find-index.js","core-js/modules/es6.array.from":"../../node_modules/core-js/modules/es6.array.from.js","core-js/modules/es7.array.includes":"../../node_modules/core-js/modules/es7.array.includes.js","core-js/modules/es6.array.iterator":"../../node_modules/core-js/modules/es6.array.iterator.js","core-js/modules/es6.array.of":"../../node_modules/core-js/modules/es6.array.of.js","core-js/modules/es6.array.sort":"../../node_modules/core-js/modules/es6.array.sort.js","core-js/modules/es6.array.species":"../../node_modules/core-js/modules/es6.array.species.js","core-js/modules/es6.date.to-primitive":"../../node_modules/core-js/modules/es6.date.to-primitive.js","core-js/modules/es6.date.to-string":"../../node_modules/core-js/modules/es6.date.to-string.js","core-js/modules/es6.function.has-instance":"../../node_modules/core-js/modules/es6.function.has-instance.js","core-js/modules/es6.function.name":"../../node_modules/core-js/modules/es6.function.name.js","core-js/modules/es6.map":"../../node_modules/core-js/modules/es6.map.js","core-js/modules/es6.math.acosh":"../../node_modules/core-js/modules/es6.math.acosh.js","core-js/modules/es6.math.asinh":"../../node_modules/core-js/modules/es6.math.asinh.js","core-js/modules/es6.math.atanh":"../../node_modules/core-js/modules/es6.math.atanh.js","core-js/modules/es6.math.cbrt":"../../node_modules/core-js/modules/es6.math.cbrt.js","core-js/modules/es6.math.clz32":"../../node_modules/core-js/modules/es6.math.clz32.js","core-js/modules/es6.math.cosh":"../../node_modules/core-js/modules/es6.math.cosh.js","core-js/modules/es6.math.expm1":"../../node_modules/core-js/modules/es6.math.expm1.js","core-js/modules/es6.math.fround":"../../node_modules/core-js/modules/es6.math.fround.js","core-js/modules/es6.math.hypot":"../../node_modules/core-js/modules/es6.math.hypot.js","core-js/modules/es6.math.imul":"../../node_modules/core-js/modules/es6.math.imul.js","core-js/modules/es6.math.log1p":"../../node_modules/core-js/modules/es6.math.log1p.js","core-js/modules/es6.math.log10":"../../node_modules/core-js/modules/es6.math.log10.js","core-js/modules/es6.math.log2":"../../node_modules/core-js/modules/es6.math.log2.js","core-js/modules/es6.math.sign":"../../node_modules/core-js/modules/es6.math.sign.js","core-js/modules/es6.math.sinh":"../../node_modules/core-js/modules/es6.math.sinh.js","core-js/modules/es6.math.tanh":"../../node_modules/core-js/modules/es6.math.tanh.js","core-js/modules/es6.math.trunc":"../../node_modules/core-js/modules/es6.math.trunc.js","core-js/modules/es6.number.constructor":"../../node_modules/core-js/modules/es6.number.constructor.js","core-js/modules/es6.number.epsilon":"../../node_modules/core-js/modules/es6.number.epsilon.js","core-js/modules/es6.number.is-finite":"../../node_modules/core-js/modules/es6.number.is-finite.js","core-js/modules/es6.number.is-integer":"../../node_modules/core-js/modules/es6.number.is-integer.js","core-js/modules/es6.number.is-nan":"../../node_modules/core-js/modules/es6.number.is-nan.js","core-js/modules/es6.number.is-safe-integer":"../../node_modules/core-js/modules/es6.number.is-safe-integer.js","core-js/modules/es6.number.max-safe-integer":"../../node_modules/core-js/modules/es6.number.max-safe-integer.js","core-js/modules/es6.number.min-safe-integer":"../../node_modules/core-js/modules/es6.number.min-safe-integer.js","core-js/modules/es6.number.parse-float":"../../node_modules/core-js/modules/es6.number.parse-float.js","core-js/modules/es6.number.parse-int":"../../node_modules/core-js/modules/es6.number.parse-int.js","core-js/modules/es6.object.assign":"../../node_modules/core-js/modules/es6.object.assign.js","core-js/modules/es7.object.define-getter":"../../node_modules/core-js/modules/es7.object.define-getter.js","core-js/modules/es7.object.define-setter":"../../node_modules/core-js/modules/es7.object.define-setter.js","core-js/modules/es7.object.entries":"../../node_modules/core-js/modules/es7.object.entries.js","core-js/modules/es6.object.freeze":"../../node_modules/core-js/modules/es6.object.freeze.js","core-js/modules/es6.object.get-own-property-descriptor":"../../node_modules/core-js/modules/es6.object.get-own-property-descriptor.js","core-js/modules/es7.object.get-own-property-descriptors":"../../node_modules/core-js/modules/es7.object.get-own-property-descriptors.js","core-js/modules/es6.object.get-own-property-names":"../../node_modules/core-js/modules/es6.object.get-own-property-names.js","core-js/modules/es6.object.get-prototype-of":"../../node_modules/core-js/modules/es6.object.get-prototype-of.js","core-js/modules/es7.object.lookup-getter":"../../node_modules/core-js/modules/es7.object.lookup-getter.js","core-js/modules/es7.object.lookup-setter":"../../node_modules/core-js/modules/es7.object.lookup-setter.js","core-js/modules/es6.object.prevent-extensions":"../../node_modules/core-js/modules/es6.object.prevent-extensions.js","core-js/modules/es6.object.is":"../../node_modules/core-js/modules/es6.object.is.js","core-js/modules/es6.object.is-frozen":"../../node_modules/core-js/modules/es6.object.is-frozen.js","core-js/modules/es6.object.is-sealed":"../../node_modules/core-js/modules/es6.object.is-sealed.js","core-js/modules/es6.object.is-extensible":"../../node_modules/core-js/modules/es6.object.is-extensible.js","core-js/modules/es6.object.keys":"../../node_modules/core-js/modules/es6.object.keys.js","core-js/modules/es6.object.seal":"../../node_modules/core-js/modules/es6.object.seal.js","core-js/modules/es6.object.set-prototype-of":"../../node_modules/core-js/modules/es6.object.set-prototype-of.js","core-js/modules/es7.object.values":"../../node_modules/core-js/modules/es7.object.values.js","core-js/modules/es6.promise":"../../node_modules/core-js/modules/es6.promise.js","core-js/modules/es7.promise.finally":"../../node_modules/core-js/modules/es7.promise.finally.js","core-js/modules/es6.reflect.apply":"../../node_modules/core-js/modules/es6.reflect.apply.js","core-js/modules/es6.reflect.construct":"../../node_modules/core-js/modules/es6.reflect.construct.js","core-js/modules/es6.reflect.define-property":"../../node_modules/core-js/modules/es6.reflect.define-property.js","core-js/modules/es6.reflect.delete-property":"../../node_modules/core-js/modules/es6.reflect.delete-property.js","core-js/modules/es6.reflect.get":"../../node_modules/core-js/modules/es6.reflect.get.js","core-js/modules/es6.reflect.get-own-property-descriptor":"../../node_modules/core-js/modules/es6.reflect.get-own-property-descriptor.js","core-js/modules/es6.reflect.get-prototype-of":"../../node_modules/core-js/modules/es6.reflect.get-prototype-of.js","core-js/modules/es6.reflect.has":"../../node_modules/core-js/modules/es6.reflect.has.js","core-js/modules/es6.reflect.is-extensible":"../../node_modules/core-js/modules/es6.reflect.is-extensible.js","core-js/modules/es6.reflect.own-keys":"../../node_modules/core-js/modules/es6.reflect.own-keys.js","core-js/modules/es6.reflect.prevent-extensions":"../../node_modules/core-js/modules/es6.reflect.prevent-extensions.js","core-js/modules/es6.reflect.set":"../../node_modules/core-js/modules/es6.reflect.set.js","core-js/modules/es6.reflect.set-prototype-of":"../../node_modules/core-js/modules/es6.reflect.set-prototype-of.js","core-js/modules/es6.regexp.constructor":"../../node_modules/core-js/modules/es6.regexp.constructor.js","core-js/modules/es6.regexp.flags":"../../node_modules/core-js/modules/es6.regexp.flags.js","core-js/modules/es6.regexp.match":"../../node_modules/core-js/modules/es6.regexp.match.js","core-js/modules/es6.regexp.replace":"../../node_modules/core-js/modules/es6.regexp.replace.js","core-js/modules/es6.regexp.split":"../../node_modules/core-js/modules/es6.regexp.split.js","core-js/modules/es6.regexp.search":"../../node_modules/core-js/modules/es6.regexp.search.js","core-js/modules/es6.regexp.to-string":"../../node_modules/core-js/modules/es6.regexp.to-string.js","core-js/modules/es6.set":"../../node_modules/core-js/modules/es6.set.js","core-js/modules/es6.symbol":"../../node_modules/core-js/modules/es6.symbol.js","core-js/modules/es7.symbol.async-iterator":"../../node_modules/core-js/modules/es7.symbol.async-iterator.js","core-js/modules/es6.string.anchor":"../../node_modules/core-js/modules/es6.string.anchor.js","core-js/modules/es6.string.big":"../../node_modules/core-js/modules/es6.string.big.js","core-js/modules/es6.string.blink":"../../node_modules/core-js/modules/es6.string.blink.js","core-js/modules/es6.string.bold":"../../node_modules/core-js/modules/es6.string.bold.js","core-js/modules/es6.string.code-point-at":"../../node_modules/core-js/modules/es6.string.code-point-at.js","core-js/modules/es6.string.ends-with":"../../node_modules/core-js/modules/es6.string.ends-with.js","core-js/modules/es6.string.fixed":"../../node_modules/core-js/modules/es6.string.fixed.js","core-js/modules/es6.string.fontcolor":"../../node_modules/core-js/modules/es6.string.fontcolor.js","core-js/modules/es6.string.fontsize":"../../node_modules/core-js/modules/es6.string.fontsize.js","core-js/modules/es6.string.from-code-point":"../../node_modules/core-js/modules/es6.string.from-code-point.js","core-js/modules/es6.string.includes":"../../node_modules/core-js/modules/es6.string.includes.js","core-js/modules/es6.string.italics":"../../node_modules/core-js/modules/es6.string.italics.js","core-js/modules/es6.string.iterator":"../../node_modules/core-js/modules/es6.string.iterator.js","core-js/modules/es6.string.link":"../../node_modules/core-js/modules/es6.string.link.js","core-js/modules/es7.string.pad-start":"../../node_modules/core-js/modules/es7.string.pad-start.js","core-js/modules/es7.string.pad-end":"../../node_modules/core-js/modules/es7.string.pad-end.js","core-js/modules/es6.string.raw":"../../node_modules/core-js/modules/es6.string.raw.js","core-js/modules/es6.string.repeat":"../../node_modules/core-js/modules/es6.string.repeat.js","core-js/modules/es6.string.small":"../../node_modules/core-js/modules/es6.string.small.js","core-js/modules/es6.string.starts-with":"../../node_modules/core-js/modules/es6.string.starts-with.js","core-js/modules/es6.string.strike":"../../node_modules/core-js/modules/es6.string.strike.js","core-js/modules/es6.string.sub":"../../node_modules/core-js/modules/es6.string.sub.js","core-js/modules/es6.string.sup":"../../node_modules/core-js/modules/es6.string.sup.js","core-js/modules/es6.typed.array-buffer":"../../node_modules/core-js/modules/es6.typed.array-buffer.js","core-js/modules/es6.typed.data-view":"../../node_modules/core-js/modules/es6.typed.data-view.js","core-js/modules/es6.typed.int8-array":"../../node_modules/core-js/modules/es6.typed.int8-array.js","core-js/modules/es6.typed.uint8-array":"../../node_modules/core-js/modules/es6.typed.uint8-array.js","core-js/modules/es6.typed.uint8-clamped-array":"../../node_modules/core-js/modules/es6.typed.uint8-clamped-array.js","core-js/modules/es6.typed.int16-array":"../../node_modules/core-js/modules/es6.typed.int16-array.js","core-js/modules/es6.typed.uint16-array":"../../node_modules/core-js/modules/es6.typed.uint16-array.js","core-js/modules/es6.typed.int32-array":"../../node_modules/core-js/modules/es6.typed.int32-array.js","core-js/modules/es6.typed.uint32-array":"../../node_modules/core-js/modules/es6.typed.uint32-array.js","core-js/modules/es6.typed.float32-array":"../../node_modules/core-js/modules/es6.typed.float32-array.js","core-js/modules/es6.typed.float64-array":"../../node_modules/core-js/modules/es6.typed.float64-array.js","core-js/modules/es6.weak-map":"../../node_modules/core-js/modules/es6.weak-map.js","core-js/modules/es6.weak-set":"../../node_modules/core-js/modules/es6.weak-set.js","core-js/modules/es7.array.flat-map":"../../node_modules/core-js/modules/es7.array.flat-map.js","core-js/modules/web.timers":"../../node_modules/core-js/modules/web.timers.js","core-js/modules/web.immediate":"../../node_modules/core-js/modules/web.immediate.js","core-js/modules/web.dom.iterable":"../../node_modules/core-js/modules/web.dom.iterable.js","regenerator-runtime/runtime":"../../node_modules/regenerator-runtime/runtime.js","./mapbox":"mapbox.js","./login":"login.js","./updateSettings":"updateSettings.js","./stripe":"stripe.js"}],"../../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -8975,7 +9031,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64123" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55656" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
@@ -9006,9 +9062,8 @@ if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
         assetsToAccept.forEach(function (v) {
           hmrAcceptRun(v[0], v[1]);
         });
-      } else if (location.reload) {
-        // `location` global exists in a web worker context but lacks `.reload()` function.
-        location.reload();
+      } else {
+        window.location.reload();
       }
     }
 

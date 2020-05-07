@@ -179,7 +179,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       'host'
     )}/api/v1/users/resetPassword/${resetToken}`;
 
-    await new Email(user, restURL).sendPasswordReset();
+    await new Email(user, resetURL).sendPasswordReset();
 
     res.status(200).json({
       status: 'success',
